@@ -3,7 +3,7 @@
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `{{%users}}`.
+ * Handles the creation of table 'users'.
  */
 class m210519_163258_create_users_table extends Migration
 {
@@ -12,7 +12,7 @@ class m210519_163258_create_users_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%users}}', [
+        $this->createTable('users', [
             'id' => $this->primaryKey(),
             'username' => $this->string()->notNull()->unique(),
             'password' => $this->string()->notNull(),
@@ -31,6 +31,6 @@ class m210519_163258_create_users_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%users}}');
+        $this->dropTable('users');
     }
 }
