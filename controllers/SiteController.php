@@ -17,7 +17,7 @@ use app\models\ContactForm;
 class SiteController extends Controller
 {
     /**
-     * {@inheritdoc}
+     * @return array[]
      */
     public function behaviors()
     {
@@ -43,7 +43,7 @@ class SiteController extends Controller
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
     public function actions()
     {
@@ -59,8 +59,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
-     *
      * @return string
      */
     public function actionIndex()
@@ -69,9 +67,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Login action.
-     *
-     * @return Response|string
+     * @return string|Response
      */
     public function actionLogin()
     {
@@ -90,6 +86,9 @@ class SiteController extends Controller
         ]);
     }
 
+    /**
+     * @return string|Response
+     */
     public function actionResetPassword()
     {
         $model = new User();
@@ -120,6 +119,9 @@ class SiteController extends Controller
         ]);
     }
 
+    /**
+     * @return Response
+     */
     public function actionSetPassword()
     {
         if (Yii::$app->request->get()['passreset']) {
@@ -136,8 +138,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Logout action.
-     *
      * @return Response
      */
     public function actionLogout()
@@ -148,9 +148,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays contact page.
-     *
-     * @return Response|string
+     * @return string|Response
      */
     public function actionContact()
     {
@@ -170,8 +168,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays about page.
-     *
      * @return string
      */
     public function actionAbout()
