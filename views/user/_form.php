@@ -18,19 +18,15 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Change Password',['class' => 'btn btn-success', 'title'=>'123','name' => 'button_cb']); ?>
+        <?= Html::submitButton('Change Password', ['class' => 'btn btn-success', 'title' => '123', 'name' => 'button_cb']); ?>
     </div>
-
-<!--    --><?//= $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?>
-<!---->
-<!--    --><?//= $form->field($model, 'password_reset_token')->textInput(['maxlength' => true]) ?>
-<!--    -->
-<!--    --><?//= $form->field($model, 'role')->textInput() ?>
-<!---->
-<!--    --><?//= $form->field($model, 'created_at')->textInput(['maxlength' => true]) ?>
-<!---->
-<!--    --><?//= $form->field($model, 'updated_at')->textInput(['maxlength' => true]) ?>
-
+<!--
+    <?= $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'password_reset_token')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'role')->textInput() ?>
+    <?= $form->field($model, 'created_at')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'updated_at')->textInput(['maxlength' => true]) ?>
+-->
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

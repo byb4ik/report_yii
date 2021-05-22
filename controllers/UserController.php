@@ -5,7 +5,10 @@ namespace app\controllers;
 use Yii;
 use app\models\User;
 use app\models\SearchUser;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -14,16 +17,30 @@ use yii\filters\VerbFilter;
  */
 class UserController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
+
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'delete' => ['POST'],
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                        'denyCallback' => function ($rule, $action) {
+                            return $this->redirect(Url::toRoute(['/site/login']));
+                        }
+                    ],
+                    [
+                        'actions' => [],
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                            /** @var User $user */
+                            $user = Yii::$app->user->getIdentity();
+                            return $user->isAdmin() || $user->isUser();
+                        }
+                    ],
                 ],
             ],
         ];
@@ -34,6 +51,9 @@ class UserController extends Controller
      */
     public function actionIndex()
     {
+        if (!Yii::$app->user->getIdentity()->isAdmin()) {
+            throw new HttpException(403, Yii::t('app', 'You are not allowed to perform this action.'));
+        }
         $searchModel = new SearchUser();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -50,6 +70,9 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
+        if (Yii::$app->user->id != $id && !Yii::$app->user->getIdentity()->isAdmin()) {
+            throw new HttpException(403, Yii::t('app', 'You are not allowed to perform this action.'));
+        }
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -78,6 +101,9 @@ class UserController extends Controller
      */
     public function actionUpdate($id)
     {
+        if (Yii::$app->user->id != $id && !Yii::$app->user->getIdentity()->isAdmin()) {
+            throw new HttpException(403, Yii::t('app', 'You are not allowed to perform this action.'));
+        }
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -102,6 +128,9 @@ class UserController extends Controller
      */
     public function actionDelete($id)
     {
+        if (!Yii::$app->user->getIdentity()->isAdmin()) {
+            throw new HttpException(403, Yii::t('app', 'You are not allowed to perform this action.'));
+        }
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
