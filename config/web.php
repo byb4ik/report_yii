@@ -35,7 +35,7 @@ $config = [
                 'host' => 'smtp.gmail.com',
                 'port' => '587',
                 'username' => 'vladevranov@gmail.com',
-                'password' => 'Diks9001Diks',
+                'password' => '***',
             ]
         ],
         'log' => [
