@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Api;
 use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
@@ -19,7 +20,7 @@ class ApiController extends \yii\web\Controller
                     [
                         'allow' => false,
                         'roles' => ['?'],
-                        'denyCallback' => function($rule, $action) {
+                        'denyCallback' => function ($rule, $action) {
                             return $this->redirect(Url::toRoute(['/site/login']));
                         }
                     ],
@@ -27,24 +28,18 @@ class ApiController extends \yii\web\Controller
                         'actions' => [],
                         'allow' => true,
                         'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            /** @var User $user */
-                            $user = Yii::$app->user->getIdentity();
-                            return $user->isAdmin();
-                        }
                     ],
                 ],
             ],
         ];
     }
+
     public function actionIndex()
     {
-        if (!Yii::$app->user->getIdentity()->isAdmin()){
+        if (!Yii::$app->user->getIdentity()->isUser()) {
             throw new HttpException(403, Yii::t('app', 'You are not allowed to perform this action.'));
         }
-        return $this->render('index', [
-            'data' => ['data1' => 1, 'data2' => 2, 'data3' => 3],
-        ]);
-    }
 
+        return $this->render('index', ['result' => '123']);
+    }
 }

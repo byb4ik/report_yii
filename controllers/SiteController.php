@@ -23,7 +23,7 @@ class SiteController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'only' => ['logout'],
                 'rules' => [
                     [
@@ -34,7 +34,7 @@ class SiteController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -95,13 +95,13 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $user = User::findByEmail($model->email) ?: null;
             if (!empty($user)) {
-                $user->access_token = md5(rand(1000, 9999));
-                $user->generatePasswordResetToken($user->access_token);
+                $key = md5(rand(1000, 9999));
+                $user->generatePasswordResetToken($key);
                 $user->save();
                 $urlData = 'http://localhost:8080/site/set-password?passreset='
                     . base64_encode(json_encode([
                         'email' => $user->email,
-                        'access_token' => $user->access_token,
+                        'access_token' => $key,
                     ]));
                 $emailData = [
                     'email' => $user->email,
@@ -109,7 +109,10 @@ class SiteController extends Controller
                     'data' => $urlData,
                 ];
                 SendMail::sendEmail($emailData);
-
+                Yii::$app->session->setFlash(
+                    'success',
+                    'Данные для восстановления пароля отправлены на email'
+                );
                 return $this->goHome();
             }
         }
@@ -130,8 +133,17 @@ class SiteController extends Controller
             );
             $model = User::findByEmail($result['email']) ?: null;
             if ($model->validateToken($result['access_token'])) {
-                $model->updatePassword();
-
+                if ($model->updatePassword()) {
+                    Yii::$app->session->setFlash(
+                        'success',
+                        'Пароль отправлен на email'
+                    );
+                    return $this->goHome();
+                }
+                Yii::$app->session->setFlash(
+                    'danger',
+                    'Ошибка'
+                );
                 return $this->goHome();
             }
         }
@@ -165,13 +177,5 @@ class SiteController extends Controller
         return $this->render('contact', [
             'model' => $model,
         ]);
-    }
-
-    /**
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 }

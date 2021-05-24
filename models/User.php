@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+
+use DateTime;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -12,20 +14,41 @@ class User extends ActiveRecord implements IdentityInterface
 {
     const ROLE_ADMIN = 1;
     const ROLE_USER = 10;
+
     /**
-     * User model
-     *
-     * @property integer $id
-     * @property string $username
-     * @property string $password write-only password
-     * @property string $access_token
-     * @property string $auth_key
-     * @property string $password_reset_token
-     * @property string $email
-     * @property string $role
-     * @property integer $created_at
-     * @property integer $updated_at
+     * {@inheritdoc}
      */
+    public function rules()
+    {
+        return [
+            [['username', 'password', 'access_token', 'email'], 'required'],
+            [['role'], 'integer'],
+            [['username', 'password', 'email', 'password_reset_token', 'created_at', 'updated_at'], 'string', 'max' => 255],
+            [['access_token', 'created_at', 'updated_at'], 'string', 'max' => 100],
+            [['username'], 'unique'],
+            [['email'], 'unique'],
+            [['password_reset_token'], 'unique'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Username',
+            'password' => 'Пароль',
+            'auth_key' => 'Auth Key',
+            'access_token' => 'Access Token',
+            'password_reset_token' => 'Password Reset Token',
+            'email' => 'Email',
+            'role' => 'Role',
+            'created_at' => 'Профиль создан',
+            'updated_at' => 'Профиль обновлен',
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -69,21 +92,6 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['username', 'password', 'access_token', 'email', 'created_at', 'updated_at'], 'required'],
-            [['role'], 'integer'],
-            [['username', 'password', 'email', 'created_at', 'updated_at'], 'string', 'max' => 255],
-            [['access_token', 'password_reset_token'], 'string', 'max' => 100],
-            [['username'], 'unique'],
-            [['email'], 'unique'],
-            [['password_reset_token'], 'unique'],
-        ];
-    }
 
     /**
      * @inheritdoc
@@ -177,7 +185,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function setUpdateTime()
     {
-        $this->updated_at = date('Y-m-d H:m:i');
+        $this->updated_at = date('Y-m-d H:i:m');
     }
 
     /**
@@ -185,7 +193,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function setCreateTime()
     {
-        $this->created_at = date('Y-m-d H:m:i');
+        $this->created_at = date('Y-m-d H:i:m');
     }
 
     /**
@@ -206,7 +214,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function generatePasswordResetToken($key)
     {
-        $this->password_reset_token = Yii::$app->security->generatePasswordHash($key) . '!-!' . date('Y-m-d H:m:i');
+        $this->password_reset_token = Yii::$app->security->generatePasswordHash($key);
     }
 
     public function removePasswordResetToken()
@@ -214,10 +222,12 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
 
-    public function updatePassword(){
+    public function updatePassword()
+    {
         $password = md5(rand(100, 999));
         $this->setPassword($password);
         $this->setUpdateTime();
+        $this->validate();
         $this->save();
         $emailData = [
             'email' => $this->email,

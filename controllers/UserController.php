@@ -106,9 +106,13 @@ class UserController extends Controller
         }
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
             if (isset(Yii::$app->request->post()['button_cb'])) {
                 $model->updatePassword();
+                Yii::$app->session->setFlash(
+                    'success',
+                    'Пароль отправлен на email'
+                );
             }
 
             return $this->redirect(['view', 'id' => $model->id]);

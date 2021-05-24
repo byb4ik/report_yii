@@ -15,6 +15,7 @@ $config = [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'Hw3dg4-gkM4K3R0-gPzC66T7lhKbJ-f5',
+            //'enableCsrfValidation' => false,
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -35,7 +36,7 @@ $config = [
                 'host' => 'smtp.gmail.com',
                 'port' => '587',
                 'username' => 'vladevranov@gmail.com',
-                'password' => '***',
+                'password' => 'Diks9001Diks',
             ]
         ],
         'log' => [
@@ -59,6 +60,7 @@ $config = [
         ],
     ],
     'params' => $params,
+    'rep' => $rep,
 ];
 
 if (YII_ENV_DEV) {
